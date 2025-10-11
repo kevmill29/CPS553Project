@@ -13,8 +13,8 @@ Sign up, Add Items, Search, Comment, Post photos, create threads, Add friends, c
 
 The this project will use React and React Components for the webapp. It will be one page will require no loading to separate pages. 
 
+![diagram for database](https://github.com/kevmill29/CPS553Project/blob/main/CLASS%20ERD.png?raw=true)
 
-![DIAGRAM FOR DATABASE](https://github.com/kevmill29/CPS553Project/blob/main/CLASS%20ERD.png?raw=true)
-![why is this not linking](raw.github.com/testphoto/blahblah)
+
 
 
