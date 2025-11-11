@@ -1,0 +1,9 @@
+JSON Javascript Object Notation lightweight data - interchange format
+-Easy to read and write 
+-Easy for machines to parse
+-Syntax for serializing objects, arrays, numbers,etc
+-this is how we send data over
+- much more strict cannot have trailing commas, must be double quoted strings 
+
+To convert json to javascript use JSON.parse() 
+JSON.stringify(value) converts javascript into json readable text 

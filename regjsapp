@@ -7,11 +7,19 @@ let loginForm = document.getElementById("loginForm")
 let post = document.getElementById("post")
 
 // registration form event listener
+if(regForm){
 regForm.addEventListener('submit', register);
+}
+
 //login event listener
-loginForm.addEventListener('submit', login)
+if(loginForm){
+    loginForm.addEventListener('submit', login)
+}
 //post event listener
+if(post){
 post.addEventListener('submit', postThread)
+}
+
 
 function register(e){
     //this will run when the user submits to add their registration information
@@ -22,15 +30,16 @@ function register(e){
 if(validPassword(pass, confirmPass)){
 
     const user = {
-        username:document.getElementById("username").value,
         email: document.getElementById("userEmail").value,
         password: document.getElementById("passwd").value,
         uuid: crypto.randomUUID()
     }
+    console.log(user)
 } else{
     throw new Error("Passwords must match!")
 }
-console.log("New user registered!")
+
+
 }
 
 function login(e){
@@ -40,6 +49,7 @@ function login(e){
         email: document.getElementById("useremail").value,
         password: document.getElementById("passwd").value
     }
+    console.log(user)
 }
 
 function postThread(e){
@@ -50,6 +60,7 @@ function postThread(e){
         title: document.getElementById("title"),
         timeStamp: timeStamp.toUTCString
     }
+    console.log(post)
 }
 
 
