@@ -1,18 +1,23 @@
 {
-  "dependencies": {
-    "@reduxjs/toolkit": "^2.9.2",
-    "express": "^5.1.0",
-    "mysql": "^2.18.1",
-    "react-redux": "^9.2.0"
-  },
-  "name": "assignment3",
+  "name": "oaktree",
   "version": "1.0.0",
-  "description": "",
+  "description": "Social media app for college students to connect.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kevmill29/CPS553Project.git"
+  },
+  "author": "Kevin Emile",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kevmill29/CPS553Project/issues"
+  },
+  "homepage": "https://github.com/kevmill29/CPS553Project#readme",
+  "devDependencies": {
+    "nodemon": "^3.1.11"
+  }
 }
