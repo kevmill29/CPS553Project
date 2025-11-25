@@ -1,9 +1,9 @@
-const User = require("./models/User");
+const User = require("../models/User");
 
 //finds all the users in db
 exports.getUsers = async (req, res) => {
     try {
-        const users = typeof User.findAll === 'function' ? await User.findAll() : [];
+        const users = await User.getUsers();
         return res.status(200).json(users);
     } catch (err) {
         console.error('getUsers error:', err);
@@ -34,7 +34,7 @@ exports.getUserById = async (req, res) => {
 //create function
 exports.createUser = async (req, res) => {
     try{
-        const {user, email} = req.body
+        const {name, email} = req.body
         
         const newUser = await User.createUser(name, email)
         res.status(201).json(newUser)
@@ -79,44 +79,6 @@ try{
     return res.status(500).json({message: "User was not deleted or does not exist!"})
 }
 
-exports.login = async (req, res) => {
-  try {
-    const { email, password } = req.body;
 
-    const user = await User.findByEmail(email);
-
-    if (!user || user.password !== password) {
-      return res.status(401).json({ message: "Invalid login credentials" });
-    }
-
-    res.json({ message: "Login successful", user });
-
-  } catch (err) {
-    console.error("Login error:", err);
-    res.status(500).json({ message: "Something went wrong. Try again later." });
-  }
-};
-
-exports.register = async(req, res) => {
-    try{
-        const id = req.params.id;
-
-        //check first if user exists before creating profile
-        const existingUser = await User.getUserById(id)
-        if(existingUser){
-            return res.status(401).json({message:"User already exists!"})
-        }
-
-        //create new user if user does not exist
-        const newUser = await User.register(name, email, password)
-
-        res.status(201).json({message: "User successfully created!", user: newUser})
-
-
-    }catch(err){
-        console.error("Registration error: ", err)
-        res.status(500).json({message: "Something went wrong please try again later!"})
-    }
-}
 
 }
