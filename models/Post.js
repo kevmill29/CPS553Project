@@ -1,0 +1,85 @@
+const { query } = require("./db_connect");
+
+// OPTIONAL — Enable ONLY if you want to auto-create the post table
+
+// async function createTable() {
+//     const sql = `
+//         CREATE TABLE IF NOT EXISTS post (
+//             PostID INT PRIMARY KEY AUTO_INCREMENT,
+//             UserID INT NOT NULL,
+//             Content TEXT NOT NULL,
+//             CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+//             FOREIGN KEY (UserID) REFERENCES user(UserID) ON DELETE CASCADE
+//         )
+//     `;
+//     await query(sql);
+// }
+
+// createTable(); // disabled to avoid conflicts
+
+class Post {
+
+    // CREATE a post
+    static async createPost(userID, content) {
+        const sql = `
+            INSERT INTO post (UserID, Content)
+            VALUES (?, ?)
+        `;
+        const result = await query(sql, [userID, content]);
+
+        return {
+            PostID: result.insertId,
+            UserID: userID,
+            Content: content
+        };
+    }
+
+    // GET all posts
+    static async getPosts() {
+        const sql = `
+            SELECT *
+            FROM post
+            ORDER BY CreatedAt DESC
+        `;
+        const rows = await query(sql);
+        return rows;
+    }
+
+    // GET post by ID
+    static async getPostById(id) {
+        const sql = `
+            SELECT *
+            FROM post
+            WHERE PostID = ?
+        `;
+        const rows = await query(sql, [id]);
+        return rows[0];
+    }
+
+    // UPDATE post
+    static async updatePost(id, content) {
+        const sql = `
+            UPDATE post
+            SET Content = ?
+            WHERE PostID = ?
+        `;
+        await query(sql, [content, id]);
+
+        return {
+            PostID: id,
+            Content: content
+        };
+    }
+
+    // DELETE post
+    static async deletePost(id) {
+        const sql = `
+            DELETE FROM post
+            WHERE PostID = ?
+        `;
+        await query(sql, [id]);
+        return true;
+    }
+}
+
+module.exports = Post;

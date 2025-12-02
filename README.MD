@@ -18,3 +18,23 @@ The this project will use React and React Components for the webapp. It will be 
 
 
 
+
+**Install Packages**
+
+- **Dependencies:** `dotenv`, `mysql2` — install with:
+
+```
+npm install dotenv mysql2
+```
+
+- **Dev dependencies:** `nodemon` — install with:
+
+```
+npm install --save-dev nodemon
+```
+
+- **Install all:** run `npm install` to install everything from `package.json`.
+
+
+
+
