@@ -1,5 +1,30 @@
 const { query } = require("./db_connect");
 
+// Automatically ensure the table exists when the app starts
+async function createTable() {
+    const sql = `
+        CREATE TABLE IF NOT EXISTS user (
+            UserID INT PRIMARY KEY AUTO_INCREMENT,
+            Username VARCHAR(100) NOT NULL,
+            Password VARCHAR(255) NOT NULL,
+            Email VARCHAR(100) NOT NULL UNIQUE,
+            ProfilePicture VARCHAR(255),
+            CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    `;
+
+    try {
+        await query(sql);
+        console.log("User table is ready.");
+    } catch (err) {
+        console.error(" Error creating user table:", err);
+    }
+}
+
+// Run table creation immediately when the file loads
+createTable();
+
+
 class User {
 
     // GET all users

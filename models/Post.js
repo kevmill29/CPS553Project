@@ -2,20 +2,25 @@ const { query } = require("./db_connect");
 
 // OPTIONAL — Enable ONLY if you want to auto-create the post table
 
-// async function createTable() {
-//     const sql = `
-//         CREATE TABLE IF NOT EXISTS post (
-//             PostID INT PRIMARY KEY AUTO_INCREMENT,
-//             UserID INT NOT NULL,
-//             Content TEXT NOT NULL,
-//             CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-//             FOREIGN KEY (UserID) REFERENCES user(UserID) ON DELETE CASCADE
-//         )
-//     `;
-//     await query(sql);
-// }
-
-// createTable(); // disabled to avoid conflicts
+async function createTable() {
+    const sql = `
+        CREATE TABLE IF NOT EXISTS post (
+            PostID INT PRIMARY KEY AUTO_INCREMENT,
+            UserID INT NOT NULL,
+            Content TEXT NOT NULL,
+            CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (UserID) REFERENCES user(UserID) ON DELETE CASCADE
+        )
+    `;
+    
+   try {
+        await query(sql);
+        console.log(" Post table is ready.");
+    } catch (err) {
+        console.error(" Error creating post table:", err);
+    }
+}
+createTable(); 
 
 class Post {
 
