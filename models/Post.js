@@ -15,9 +15,9 @@ async function createTable() {
     
    try {
         await query(sql);
-        console.log(" Post table is ready.");
+        console.log("Post table is ready.");
     } catch (err) {
-        console.error(" Error creating post table:", err);
+        console.error("Error creating post table:", err);
     }
 }
 createTable(); 
@@ -84,6 +84,17 @@ class Post {
         `;
         await query(sql, [id]);
         return true;
+    }
+
+    static async getPostsByUserId(userId) {
+        let sql = `
+            SELECT PostID, Content, CreatedAt, UserID 
+            FROM post 
+            WHERE UserID = ?
+            ORDER BY CreatedAt DESC
+        `;
+        const results = await query(sql, [userId]);
+        return results;
     }
 }
 

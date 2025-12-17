@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="style.css">
+    <script defer src = "script.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet"> 
+    <title>Oaktree Dashboard</title>
+</head>
+<body>
+    
+    <nav class="sidebar-nav" id="sidebarNav">
+        <div class="nav-trigger">
+            MENU
+        </div>
+        <ul>
+            <a href="#" class="active-link">DASHBOARD / FEED</a> 
+            <a href="post.html">CREATE POST</a>
+            <a href="profile.html">Profile</a>
+            <a href="#" id="logoutBtn">LOGOUT</a>
+        </ul>  
+    </nav>
+    <div class="dashboard-main-layout">
+        
+        <aside class="dashboard-sidebar">
+            <div class="profile-card dashboard-card">
+                <h2>Welcome Back!</h2>
+                <div id="profile-info">
+                    <p><strong>Name:</strong> <span id="dash-name">Loading...</span></p>
+                    <p><strong>Email:</strong> <span id="dash-email">Loading...</span></p>
+                    <p><strong>User ID:</strong> <span id="dash-id">...</span></p>
+                </div>
+            </div>
+
+            <div class="activity-section dashboard-card">
+                <h3>Your Recent Activity</h3>
+                <p>You are successfully logged into the secure area.</p>
+                <div id="stats-container">
+                    </div>
+            </div>
+        </aside>
+
+        <main class="community-feed-area">
+            <header class="feed-header">
+                <h1>Oaktree Community Feed</h1>
+                <p>See what's new across the Oaktree community.</p>
+            </header>
+            
+            <div id="postsContainer" class="posts-list">
+                
+                <p style="text-align: center; color: var(--color-text-muted);">Loading posts...</p>
+
+                </div>
+        </main>
+        
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // Run this immediately when dashboard loads
+        document.addEventListener('DOMContentLoaded', loadDashboard);
+    </script>
+</body>
+</html>

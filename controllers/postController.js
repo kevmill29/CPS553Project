@@ -78,4 +78,21 @@ exports.deletePost = async (req, res) => {
     console.error("deletePost error:", err);
     res.status(500).json({ message: "Unable to delete post" });
   }
+exports.getProfilePosts = async (req, res) => {
+    
+    const userId = req.params.userId || req.body.userId; // Get ID from parameter or body
+
+    if (!userId) {
+        return res.status(400).json({ message: "User ID is required to fetch posts." });
+    }
+
+    try {
+        const posts = await Post.getPostsByUserId(userId);
+        res.json(posts);
+    } catch (err) {
+        console.error("Error fetching user posts:", err.stack);
+        res.status(500).json({ message: "Failed to retrieve user's posts." });
+    }
+};
+
 };

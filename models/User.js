@@ -1,3 +1,4 @@
+
 const { query } = require("./db_connect");
 
 // Automatically ensure the table exists when the app starts
@@ -47,6 +48,17 @@ class User {
         const rows = await query(sql, [id]);
         return rows[0];
     }
+    
+    // GET user by Email
+    static async getUserByEmail(email) {
+        const sql = `
+            SELECT *
+            FROM user
+            WHERE Email = ?
+        `;
+        const rows = await query(sql, [email]);
+        return rows[0];
+    }
 
     // CREATE new user
     static async createUser(username, email, password) {
@@ -85,16 +97,20 @@ class User {
         return true;
     }
 
-    // LOGIN user
-    static async loginUser({ email }) {
-        const sql = `
-            SELECT *
-            FROM user
-            WHERE Email = ?
+    // LOGIN / GET user by Username
+    
+  
+    static async login(username) {
+         let sql = `
+            SELECT * FROM user 
+            WHERE Username = ?
         `;
-        const rows = await query(sql, [email]);
-        return rows[0];
+    
+        const cuser = await query(sql, [username]);
+       if(!cuser[0]) throw new Error("User does not exist");
+        return cuser[0]; // Returns the single user object, or undefined/null
     }
 }
+
 
 module.exports = User;

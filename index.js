@@ -1,14 +1,18 @@
 require('dotenv').config();
 const express = require('express');
-
+const cors = require('cors');
 const app = express();
+
+
+
 
 const port = process.env.PORT || 4500;
 
 const authRoute = require('./routes/authRoute');
 const userRoute = require('./routes/userRoute');
 const postRoute = require('./routes/postRoute');
-
+// Middleware
+app.use(cors())
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -19,7 +23,7 @@ app.use('/api/posts', postRoute);
 
 const { query } = require("./models/db_connect");
 
-app.get("/testdb", async (req, res) => {
+app.get('/api/testdb', async (req, res) => {
     try {
         const rows = await query("SELECT 1");
         res.json({ ok: true, rows });

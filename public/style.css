@@ -1,143 +1,341 @@
-body{
-    font-family: "IBM Plex Serif", sans-serif;
-    margin:20px;
-    text-align: center;
-    background-color: #2f3541;
-    color: #7d7d7d;
-    display: center;
+/* Import Roboto for a clean, social media feel */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+/* GLOBALS AND LAYOUT */
+
+:root {
+    /* Oaktree Dark Mode Palette */
+    --color-dark-bg: #1e1d1a;
+    --color-card-bg: #2b2a26;
+    --color-accent: #5e8c31;
+    --color-text-light: #e4e6eb;
+    --color-text-muted: #b0b3b8;
+    --color-button-hover: #486e24;
+    --color-input-bg: #3c3b37;
+    
+    /* Fonts */
+    --font-primary: 'Roboto', sans-serif;
 }
 
-.form{
-    padding: 20px 20px 20px 20px;
+/* Base Style for Dark Theme */
+body {
+    background-color: var(--color-dark-bg);
+    color: var(--color-text-light);
+    font-family: var(--font-primary);
+    margin: 0;
+    padding: 0;
     display: flex;
     flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* NAVIGATION BAR (Sidebar) */
+
+.sidebar-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 220px;
+    z-index: 100;
+    
+    background-color: var(--color-card-bg);
+    border-right: 2px solid var(--color-accent);
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.6);
+    
+    transform: translateX(-220px);
+    transition: transform 0.4s ease-out;
+}
+
+.sidebar-nav:hover {
+    transform: translateX(0);
+}
+
+.sidebar-nav ul {
+    list-style: none;
+    padding: 20px 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.sidebar-nav a {
+    text-decoration: none;
+    color: var(--color-text-light);
+    font-weight: 500;
+    font-size: 1em;
+    padding: 12px 20px;
+    width: 100%;
+    box-sizing: border-box;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.sidebar-nav a:hover {
+    background-color: var(--color-button-hover);
+    color: white;
+}
+
+/* Navigation Trigger */
+
+.nav-trigger {
+    position: absolute;
+    top: 50%;
+    right: -30px;
+    transform: translateY(-50%) rotate(90deg);
+    
+    background-color: var(--color-accent);
+    color: white;
+    padding: 5px 10px;
+    font-size: 0.8em;
+    font-weight: 700;
+    border-radius: 0 0 5px 5px;
+    cursor: pointer;
+    text-align: center;
+    
+    opacity: 1;
+    transition: opacity 0.4s;
+}
+
+.sidebar-nav:hover .nav-trigger {
+    opacity: 0;
+}
+
+/* REGISTRATION PAGE LAYOUT & CARD */
+
+.registration-container {
+    flex-grow: 1;
+    display: flex;
     justify-content: center;
     align-items: center;
-    border:2px black solid ;
-    width: 300px;
-    margin: 0 auto;
-    box-shadow: 10px 5px 5px rgba(24, 23, 23, 0.144)
+    width: 100%;
+    padding: 20px;
+    margin-top: 50px;
+    
+    transition: margin-left 0.4s ease-out;
 }
-nav{
-    background-color: #4d576a;
+
+.sidebar-nav:hover ~ .registration-container {
+    margin-left: 100px;
+}
+
+.registration-card {
+    background-color: var(--color-card-bg);
+    padding: 30px;
+    border-radius: 12px;
+    max-width: 450px;
+    width: 100%;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(94, 140, 49, 0.3);
+}
+
+.registration-card h1 {
+    font-family: var(--font-primary);
+    color: var(--color-accent);
+    text-align: center;
+    margin-bottom: 5px;
+    font-size: 1.8em;
+    font-weight: 700;
+}
+
+.registration-card .tagline {
+    text-align: center;
+    color: var(--color-text-muted);
+    margin-bottom: 25px;
+}
+
+/* FORM STYLING */
+
+.input-group {
+    margin-bottom: 15px;
+}
+
+.form label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 0.85em;
+    color: var(--color-text-muted);
+}
+
+.form input[type="text"],
+.form input[type="password"],
+.form input[type="email"] {
+    width: 100%;
+    padding: 12px 10px;
+    background-color: var(--color-input-bg);
+    border: 1px solid #555450;
+    color: var(--color-text-light);
+    border-radius: 6px;
+    font-size: 1em;
+    box-sizing: border-box;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+/* AUTOFILL FIX */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px var(--color-input-bg) inset !important;
+    -webkit-text-fill-color: var(--color-text-light) !important;
+}
+
+/* FOCUS STYLING */
+.form input[type="text"]:focus,
+.form input[type="password"]:focus,
+.form input[type="email"]:focus {
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 1px var(--color-accent);
+}
+
+/* BUTTON STYLING */
+
+.futuristic-button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 15px;
+    background-color: var(--color-accent);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-family: var(--font-primary);
+    font-weight: 700;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.2s, opacity 0.2s;
+}
+
+.futuristic-button:hover {
+    background-color: var(--color-button-hover);
+}
+
+/* FEED LAYOUT ADJUSTMENTS */
+
+.post-feed-container {
+    align-items: flex-start;
+    padding-top: 50px; 
+    max-width: 800px; 
+}
+
+/* FEED HEADER */
+.feed-header {
+    width: 100%;
+    text-align: left;
+    margin-bottom: 20px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid rgba(176, 179, 184, 0.1); 
+}
+
+.feed-header h1 {
+    color: var(--color-text-light);
+    font-size: 1.8em;
+    margin-bottom: 5px;
+}
+
+.feed-header p {
+    color: var(--color-text-muted);
+}
+
+/* INDIVIDUAL POST CARD (Minimalist) */
+
+.post-card {
+    background-color: #242526;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    box-shadow: none; 
+    border: 1px solid rgba(176, 179, 184, 0.1); 
+}
+
+.post-header {
     display: flex;
-    flex-wrap: wrap;
-    margin: auto auto 40px auto;
-    box-shadow: 12px 12px 2px 1px rgba(0, 0, 0, 0.2);
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    padding-bottom: 0;
+    border-bottom: none; 
 }
 
-nav a{
-  float: left;
-  color: black;
-  text-align: center;
-  padding: 14px 16px;
-  text-decoration: none;
-  font-size: 17px;
+.username-link {
+    font-weight: 500;
+    color: var(--color-text-light);
+    text-decoration: none;
+    transition: color 0.2s;
 }
 
-
-
-input{
-    padding: 10px;
-    margin: 20px;
-    background-color: #444d5f;
-    width: 200px;
+.username-link:hover {
+    color: var(--color-accent);
+    cursor: pointer;
 }
 
-
-
-
-.danger{
-    width: 500px;
-    height: 750px;
-    display : center;
-}
-.danger2{
-    width: 500px;
-    height: 400px;
+.post-date {
+    font-size: 0.75em;
+    color: var(--color-text-muted);
 }
 
-
-.ibm-plex-serif-thin {
-  font-family: "IBM Plex Serif", serif;
-  font-weight: 100;
-  font-style: normal;
+.post-body p {
+    margin: 0 0 10px 0;
+    line-height: 1.4;
+    color: var(--color-text-light);
 }
 
-.ibm-plex-serif-extralight {
-  font-family: "IBM Plex Serif", serif;
-  font-weight: 200;
-  font-style: normal;
+/* POST ACTIONS (Buttons) */
+
+.post-actions {
+    display: flex;
+    gap: 10px;
+    padding-top: 8px;
+    border-top: none; 
 }
 
-.ibm-plex-serif-light {
-  font-family: "IBM Plex Serif", serif;
-  font-weight: 300;
-  font-style: normal;
+.action-button {
+    background: none;
+    border: none; 
+    color: var(--color-text-muted);
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
 }
 
-.ibm-plex-serif-regular {
-  font-family: "IBM Plex Serif", serif;
-  font-weight: 400;
-  font-style: normal;
+.action-button:hover {
+    background-color: rgba(94, 140, 49, 0.15);
+    color: var(--color-accent);
 }
 
-.ibm-plex-serif-medium {
-  font-family: "IBM Plex Serif", serif;
-  font-weight: 500;
-  font-style: normal;
+/* SUPPORT FOOTER STYLING */
+
+.support-footer {
+    width: 90%;
+    max-width: 450px;
+    text-align: center;
+    margin-top: 30px;
+    padding-bottom: 20px;
 }
 
-.ibm-plex-serif-semibold {
-  font-family: "IBM Plex Serif", serif;
-  font-weight: 600;
-  font-style: normal;
+.support-footer hr {
+    border: 0;
+    border-top: 1px solid var(--color-input-bg);
+    margin: 20px 0;
 }
 
-.ibm-plex-serif-bold {
-  font-family: "IBM Plex Serif", serif;
-  font-weight: 700;
-  font-style: normal;
+.support-footer h3 {
+    color: var(--color-text-muted);
+    font-size: 1em;
+    margin-bottom: 15px;
 }
 
-.ibm-plex-serif-thin-italic {
-  font-family: "IBM Plex Serif", serif;
-  font-weight: 100;
-  font-style: italic;
+.support-footer .danger {
+    width: 150px;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    transition: transform 0.3s;
 }
 
-.ibm-plex-serif-extralight-italic {
-  font-family: "IBM Plex Serif", serif;
-  font-weight: 200;
-  font-style: italic;
-}
-
-.ibm-plex-serif-light-italic {
-  font-family: "IBM Plex Serif", serif;
-  font-weight: 300;
-  font-style: italic;
-}
-
-.ibm-plex-serif-regular-italic {
-  font-family: "IBM Plex Serif", serif;
-  font-weight: 400;
-  font-style: italic;
-}
-
-.ibm-plex-serif-medium-italic {
-  font-family: "IBM Plex Serif", serif;
-  font-weight: 500;
-  font-style: italic;
-}
-
-.ibm-plex-serif-semibold-italic {
-  font-family: "IBM Plex Serif", serif;
-  font-weight: 600;
-  font-style: italic;
-}
-
-.ibm-plex-serif-bold-italic {
-  font-family: "IBM Plex Serif", serif;
-  font-weight: 700;
-  font-style: italic;
+.support-footer .danger:hover {
+    transform: scale(1.05);
 }

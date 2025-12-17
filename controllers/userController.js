@@ -1,3 +1,4 @@
+// User Controller
 const User = require("../models/User");
 
 // finds all the users in db
@@ -28,16 +29,69 @@ exports.getUserById = async (req, res) => {
     }
 };
 
+// searching function by email
+exports.getUserByEmail = async (req, res) => {
+    try {
+        const email = req.params.email;
+        const user = await User.getUserByEmail(email);
+
+        if (!user) {
+            return res.status(404).json({ message: "Error user does not exist!" });
+        }
+
+        return res.json(user);
+    } catch (err) {
+        console.error("Error finding user: ", err);
+        return res.status(500).json({ message: "Unable to fetch user." });
+    }
+};
+
+exports.getUserByName = async (req, res) => {
+    try {
+        const name = req.params.name;
+        
+        // FIX: Must call the correctly named model function
+        const user = await User.getUserByUsername(name); 
+        
+        if (!user) {
+            return res.status(404).json({ message: "User not found!" });
+        }
+        return res.json(user);
+    } catch (err) {
+        console.error("Error fetching user by name:", err);
+        return res.status(500).json({ message: "Server error" });
+    }
+};
+
 // create function
 exports.createUser = async (req, res) => {
     try {
-        const { name, email } = req.body;
+    
+        const { username, email, password, uuid, profilePicture } = req.body; 
 
-        const newUser = await User.createUser(name, email);
+        if (!username || !email || !password) {
+             return res.status(400).json({ message: "Missing required fields: username, email, and password are required for registration." });
+        }
+
+
+        // NOTE: Model function only takes (username, email, password)
+        const newUser = await User.createUser(
+            username, 
+            email, 
+            password, 
+            //profilePicture || null, 
+            //uuid 
+        ); 
+        
+        
         return res.status(201).json(newUser);
+        
     } catch (err) {
-        console.error("Error creating user: ", err);
-        return res.status(500).json({ message: "Unable to create user." });
+    
+        console.error("Error creating user:", err.message, err.stack); 
+        
+    
+        return res.status(500).json({ message: "Unable to create user due to a server error. Check logs for details." });
     }
 };
 
@@ -51,9 +105,10 @@ exports.updateUser = async (req, res) => {
             return res.status(404).json({ message: "User does not exist!" });
         }
 
-        const { name, email } = req.body;
+        // NOTE: Assumes the model function takes 'username', not 'name'
+        const { username, email } = req.body; 
 
-        const updatedUser = await User.updateUser(id, name, email); // call model to update user
+        const updatedUser = await User.updateUser(id, username, email); // call model to update user
         return res.json(updatedUser);
     } catch (err) {
         console.error("Could not update user!", err);
@@ -76,19 +131,6 @@ exports.deleteUser = async (req, res) => {
     } catch (err) {
         console.error("Error: Could not delete user!", err);
         return res.status(500).json({ message: "User was not deleted or does not exist!" });
-    }
-};
-
-exports.loginUser = async (req, res) => {
-    try {
-        const user = await User.loginUser(req.body);
-        if (!user) {
-            return res.status(404).json({ message: "User not found!" });
-        }
-        return res.json(user);
-    } catch (err) {
-        console.error("Error logging in user:", err);
-        return res.status(500).json({ message: "Server error" });
     }
 };
 
