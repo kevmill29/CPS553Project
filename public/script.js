@@ -1,16 +1,18 @@
-//script.js
-//server port
+// script.js
+
+// 1. GLOBAL CONSTANT: Declared once at the very top.
 const API_URL = "http://localhost:4500/api";
 
 
-// This will run when the user submits to add their registration information
 document.addEventListener('DOMContentLoaded', () => {
     // --- Get Elements ---
     const regForm = document.getElementById('regForm');
     const loginForm = document.getElementById('loginForm');
-    const postForm = document.getElementById('post');
-    const createPostForm = document.getElementById('createPostForm');
+    const postForm = document.getElementById('post'); 
+    const createPostForm = document.getElementById('createPostForm'); 
     const logoutBtn = document.getElementById("logoutBtn");
+    
+    // Elements used for conditional loading (Dashboard and Profile)
     const postsContainer = document.getElementById('postsContainer');
     const userPostsList = document.getElementById('user-posts-list');
     
@@ -31,21 +33,27 @@ document.addEventListener('DOMContentLoaded', () => {
         logoutBtn.addEventListener("click", logout);
     }
     
-    // Listener for the dedicated post creation form (e.g., on profile/dashboard)
     if (createPostForm) {
         createPostForm.addEventListener('submit', handleCreatePost);
     }
 
-    // --- Load Data Conditionally ---
-    const userID = localStorage.getItem('userID');
+    // --- Load Data Conditionally (CRITICAL FLOW CONTROL) ---
+    // NOTE: We retrieve using the standardized client key 'userID' (camelCase)
+    const userID = localStorage.getItem('userID'); 
+    const token = localStorage.getItem('userToken');
 
-    if (postsContainer) {
-        loadDashboard();
+    // 1. Dashboard Loading (Runs only if element is present)
+    if (postsContainer) { 
+        loadDashboard(userID, token);
     }
     
-    // Load the user's posts when the page loads (e.g., on profile.html)
-    if (userPostsList && userID) {
-        fetchUserPosts(userID); 
+    // 2. Profile Posts Loading (Runs only if element is present)
+    if (userPostsList) {
+        if (userID && token) {
+             fetchUserPosts(userID); 
+        } else {
+             userPostsList.innerHTML = '<p style="text-align: center;">Please log in to view your posts.</p>';
+        }
     }
 });
 
@@ -59,8 +67,9 @@ function validPassword(pass, confirmPass) {
     return true;
 }
 
+// --- Auth Functions ---
+
 async function register(e) {
-    // this will run when the user submits to add their registration information
     e.preventDefault();
 
     let pass = document.getElementById("passwd").value.trim();
@@ -76,7 +85,6 @@ async function register(e) {
         };
         
         try {
-            // api call here
             const response = await fetch(`${API_URL}/auth/register`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -96,35 +104,26 @@ async function register(e) {
             console.error("Registration error:", err);
             alert("An error occurred during registration. Please try again later.");
         }
-    } else {
-        // Note: validPassword already calls alert, but this else block maintains structure
-        console.error("Passwords did not match.");
     }
 }
 
 
-// script.js
-
-
 async function login(e) {
-    // this will run when the user submits to add their registration information
     e.preventDefault();
-
-    // --- Element Retrieval & Data Preparation ---
-    // Harmonized ID: Uses "password" to match your HTML
+    // server port 
+    const API_URL = "http://localhost:4500/api"; // Often declared globally later
+    
     const user = {
         username: document.getElementById("username").value.trim(),
-        password: document.getElementById("password").value.trim() // <--- CORRECTED LINE
+        password: document.getElementById("password").value.trim() 
     };
 
-    // Basic check to ensure fields are not empty after trimming
     if (!user.username || !user.password) {
         alert("Please enter both username and password.");
         return;
     }
 
     try {
-        // api call here
         const response = await fetch(`${API_URL}/auth/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -137,8 +136,9 @@ async function login(e) {
             console.log("Login successful:", data);
             alert("Login successful!");
 
-            // Note: Ensure your server sends 'id' and 'token' under data.user
-            localStorage.setItem("userID", data.user.id);
+            // This line failed because the server returned 'UserID' (PascalCase)
+            localStorage.setItem("userID", data.user.UserID); 
+            
             localStorage.setItem("userToken", data.token);
 
             window.location.href = 'dashboard.html';
@@ -147,53 +147,50 @@ async function login(e) {
             alert("Login failed: " + (data.message || "An unknown server error occurred."));
         }
     } catch (err) {
-        // Catches network/fetch errors (e.g., server down)
-        console.error("Login error (Network/Fetch failure):", err); alert("An error occurred during login. Please try again later.");
+        console.error("Login error (Network/Fetch failure):", err); 
+        alert("An error occurred during login. Please try again later.");
     }
-} 
-        
-
-
-
-
+}
 function logout(e) {
     e.preventDefault();
-    // Clear all local storage
     localStorage.clear();
     alert("Logged out successfully.");
     window.location.href = "login.html";
 }
 
 
+// --- Post Creation Functions ---
+
 async function postThread(e) {
-    //this will run when the user submits a post
     e.preventDefault(); 
-
-    //first get user id we saved in local storage
-    const userID = localStorage.getItem("userID");
-
-    //validation to ensure user is logged in
-    if (!userID) {
+    
+    // We still retrieve the token here for the POST action (creating the post)
+    const token = localStorage.getItem("userToken"); 
+    
+    // Optional: You can remove this check if you want to allow posting without auth (insecure)
+    // But usually, creating a post requires a token.
+    if (!token) { 
         alert("You must be logged in to post a thread!");
         return;
     }
     
     const contentElement = document.getElementById("text");
-    if (!contentElement) {
-        alert("Error: Post content field is missing.");
+    if (!contentElement || !contentElement.value.trim()) {
+        alert("Post content cannot be empty.");
         return;
     }
 
-    //backend exports.createPost expects userID and content
     const postData = {
-        userID: userID,
         content: contentElement.value
     };
 
     try {
         const response = await fetch(`${API_URL}/posts`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}` 
+            },
             body: JSON.stringify(postData)
         });
 
@@ -201,6 +198,10 @@ async function postThread(e) {
             const data = await response.json();
             console.log("Post created successfully:", data);
             alert("Your post has been created!");
+            
+          
+            fetchPostsAndPopulate(); 
+            
         } else {
             const errorData = await response.json();
             alert("Failed to create post: " + errorData.message);
@@ -212,40 +213,92 @@ async function postThread(e) {
 }
 
 
-async function loadDashboard() {
-    const userId = localStorage.getItem('userID'); 
-    const token = localStorage.getItem('userToken');
+async function handleCreatePost(event) {
+    event.preventDefault(); 
 
-    if (!userId || !token) {
-        // If no credentials found, boot them back to login
+    const content = document.getElementById('postContent').value; 
+    
+    // 🛑 FIX: Retrieve the ID directly using the key you set in Login
+    const storedUserID = localStorage.getItem('userID'); 
+    
+    // Check if ID is missing
+    if (!storedUserID) {
+        alert("You must be logged in to post!");
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_URL}/posts`, { 
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                userID: parseInt(storedUserID), // Convert string "7" to number 7
+                content: content
+            })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            console.log("Post created:", data);
+            window.location.reload(); 
+        } else {
+            console.error("Failed to create post:", data.error);
+            alert("Error: " + (data.error || "Unknown error"));
+        }
+    } catch (error) {
+        console.error("Network error:", error);
+    }
+}
+
+// --- Dashboard/Profile Loading Functions ---
+
+// Function signature takes NO parameters
+async function loadDashboard() { 
+    
+    // --- Internal Retrieval ---
+    const userID = localStorage.getItem('userID');
+    const token = localStorage.getItem('userToken');
+    
+    // 🛑 CHANGED: We ONLY check if userID is missing. We ignore the token.
+    if (!userID) { 
+        console.warn(`Redirecting to login: userID is missing.`); 
         alert("You must be logged in to view this page.");
         window.location.href = "login.html";
         return;
     }
 
-    fetchPostsAndPopulate(token); 
+    // Call the posts function (which we just fixed above)
+    fetchPostsAndPopulate(); 
 
     // FETCH USER DETAILS
     try {
-        const response = await fetch(`${API_URL}/users/${userId}`, {
+        const headers = { 'Content-Type': 'application/json' };
+        if (token) {
+            headers['Authorization'] = `Bearer ${token}`;
+        }
+
+        const response = await fetch(`${API_URL}/users/${userID}`, {
             method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}` 
-            }
+            headers: headers
         });
 
         if (response.ok) {
             const user = await response.json();
             
-            // Render data to HTML
-            document.getElementById("dash-name").innerText = user.name || user.Username || "Anonymous";
-            document.getElementById("dash-email").innerText = user.email || user.Email;
-            document.getElementById("dash-id").innerText = user.id || user.UserID; 
+            const dashName = document.getElementById("dash-name");
+            if(dashName) dashName.innerText = user.Username || user.username || "Anonymous";
+
+            const dashEmail = document.getElementById("dash-email");
+            if(dashEmail) dashEmail.innerText = user.Email || user.email;
+
+            const dashId = document.getElementById("dash-id");
+            if(dashId) dashId.innerText = user.UserID || user.id; 
             
         } else {
-            console.error("Failed to fetch profile");
-            document.getElementById("profile-info").innerHTML = "<p>Error loading profile data.</p>";
+            console.error("Failed to fetch profile data");
         }
 
     } catch (error) {
@@ -255,20 +308,26 @@ async function loadDashboard() {
 
 
 async function fetchUserPosts(userId) {
-  // Current validation is correct, but let's ensure the endpoint is built only if the ID exists.
     if (!userId) {
-        console.error("No User ID found for profile.");
-        // We will return here, preventing the fetch call.
+        console.error("fetchUserPosts called without a valid User ID.");
         return;
     }
     
     try {
-        // This is the line that uses the 'userId' parameter, which can be 'undefined' if called incorrectly.
-        const response = await fetch(`${API_URL}/user/${userId}/posts`);
+        const response = await fetch(`${API_URL}/posts/user/${userId}/posts`);
+        
+        if (!response.ok) {
+             const errorData = await response.json();
+             throw new Error(errorData.message || `Server error: ${response.status}`);
+        }
+        
         const posts = await response.json();
         
         const listElement = document.getElementById('user-posts-list');
-        listElement.innerHTML = '<h2>Your Posts</h2>'; // Clear previous posts
+        
+        if (!listElement) return;
+
+        listElement.innerHTML = '<h2>Your Posts</h2>'; 
 
         if (posts.length === 0) {
             listElement.innerHTML += '<p>You have not created any posts yet.</p>';
@@ -287,80 +346,52 @@ async function fetchUserPosts(userId) {
 
     } catch (error) {
         console.error('Error fetching user posts:', error);
-    }
-}
-
-
-async function handleCreatePost(event) {
-    event.preventDefault();
-    
-    const userID = localStorage.getItem('userID'); // Get the ID inside the function
-    // Title retrieval removed
-    const content = document.getElementById('postContent').value.trim();
-
-    // FIX: Removed 'title' from validation
-    if (!content || !userID) { 
-        alert("Please fill out the content field and ensure you are logged in.");
-        return;
-    }
-
-    try {
-        // FIX: Harmonized route to /posts (assuming this is correct)
-        const response = await fetch(`${API_URL}/posts`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-                // FIX: Removed 'title' from body
-                content: content, 
-                userID: userID 
-            })
-        });
-
-        if (response.ok) {
-            alert('Post created successfully!');
-            // Clear the form
-            document.getElementById('createPostForm').reset();
-            // Refresh the posts list
-            await fetchUserPosts(userID); 
-        } else {
-            const data = await response.json();
-            alert(`Failed to create post: ${data.message}`);
-        }
-    } catch (error) {
-        console.error('Error creating post:', error);
-        alert('Could not connect to the server.');
+        const listElement = document.getElementById('user-posts-list');
+        if(listElement) listElement.innerHTML = `<p style="color: red;">Failed to load posts: ${error.message}</p>`;
     }
 }
 
 
 // Fetch and Populate Posts in the Feed
-async function fetchPostsAndPopulate(token) {
+// Function signature takes NO parameters
+async function fetchPostsAndPopulate() { 
+    
+    // Attempt to get token, but we won't crash if it's missing
+    const token = localStorage.getItem('userToken'); 
     const postsContainer = document.getElementById('postsContainer');
+    
+    if (!postsContainer) return; 
+
+    // Clear previous content
     postsContainer.innerHTML = ''; 
 
-    if (!token) {
-        postsContainer.innerHTML = '<p style="color: red;">Error: User not authenticated. Please log in.</p>';
-        return;
-    }
+    // 🛑 DELETED THE STRICT TOKEN CHECK HERE
+    // We proceed to fetch regardless of whether we have a token or not.
 
     try {
+        const headers = { 'Content-Type': 'application/json' };
+        
+        // Only attach the token header if the token actually exists
+        if (token) {
+            headers['Authorization'] = `Bearer ${token}`;
+        }
+
         const response = await fetch(`${API_URL}/posts`, { 
             method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}` 
-            }
+            headers: headers
         });
         
         if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(`Failed to fetch posts: ${response.status} - ${errorData.message || 'Server error'}`);
+            // If the server blocks us, we just show a generic message or empty feed
+            console.warn("Server refused posts request (likely auth):", response.status);
+            postsContainer.innerHTML = '<p>No posts available.</p>'; 
+            return;
         }
 
         const posts = await response.json();
         
         if (posts.length === 0) {
-            postsContainer.innerHTML = '<p style="text-align: center; color: var(--color-text-muted);">No posts found in the community feed.</p>';
+            postsContainer.innerHTML = '<p>No posts found.</p>';
             return;
         }
         
@@ -371,23 +402,22 @@ async function fetchPostsAndPopulate(token) {
 
     } catch (error) {
         console.error("Error fetching posts:", error);
-        postsContainer.innerHTML = `<p style="color: red;">Failed to load feed. Error: ${error.message}</p>`;
+        postsContainer.innerHTML = `<p style="color: red;">Failed to load feed.</p>`;
     }
 }
 
 
 // Helper function to create a post card element
 function createPostCard(post) {
+    // 🔑 Use the PascalCase 'UserID' key from the post object
     const usernamePlaceholder = `User_${post.UserID || 'Unknown'}`; 
     const formattedDate = new Date(post.CreatedAt).toLocaleDateString('en-US', { 
         year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' 
     });
     
-    // Create the post card div
     const postCard = document.createElement('div');
     postCard.className = 'post-card';
     
-    // Populate the inner HTML
     postCard.innerHTML = `
         <div class="post-header">
             <span class="username-link">@${usernamePlaceholder}</span>

@@ -16,6 +16,15 @@ exports.getUsers = async (req, res) => {
 exports.getUserById = async (req, res) => {
     try {
         const id = req.params.id;
+        
+        // CRITICAL VALIDATION: Ensure ID is a valid number/string before proceeding
+        if (!id || id === 'undefined' || isNaN(parseInt(id))) {
+            // Log for debugging but send 400 or 404 to the client
+            console.warn(`Attempt to fetch user with invalid ID parameter: ${id}`);
+            // Return 404 (Not Found) or 400 (Bad Request)
+            return res.status(404).json({ message: "User ID not provided or is invalid." });
+        }
+
         const user = await User.getUserById(id);
 
         if (!user) {

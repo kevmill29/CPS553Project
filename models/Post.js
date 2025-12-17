@@ -1,3 +1,5 @@
+// models/Post.js
+
 const { query } = require("./db_connect");
 
 // OPTIONAL — Enable ONLY if you want to auto-create the post table
@@ -13,7 +15,7 @@ async function createTable() {
         )
     `;
     
-   try {
+    try {
         await query(sql);
         console.log("Post table is ready.");
     } catch (err) {
@@ -26,15 +28,25 @@ class Post {
 
     // CREATE a post
     static async createPost(userID, content) {
+        // 🛑 CRITICAL FIX: Convert userID to an integer and validate it.
+        // If the client sends 'undefined' or null, parseInt returns NaN.
+        const numericUserID = parseInt(userID);
+        
+        if (isNaN(numericUserID) || numericUserID <= 0) {
+            // Throw a clear error. The controller must catch this and send a 400 response.
+            throw new Error("Invalid UserID provided for post creation.");
+        }
+        
         const sql = `
             INSERT INTO post (UserID, Content)
             VALUES (?, ?)
         `;
-        const result = await query(sql, [userID, content]);
+        // Use the validated numericUserID in the query
+        const result = await query(sql, [numericUserID, content]);
 
         return {
             PostID: result.insertId,
-            UserID: userID,
+            UserID: numericUserID,
             Content: content
         };
     }
