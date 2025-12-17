@@ -36,5 +36,10 @@ npm install --save-dev nodemon
 - **Install all:** run `npm install` to install everything from `package.json`.
 
 
+Navigation Bar slides out from the left side using the green menu button:
+
+![example image](https://github.com/kevmill29/CPS553Project/blob/main/public/images/exampleImg.png?raw=true)
+
+
 
 
